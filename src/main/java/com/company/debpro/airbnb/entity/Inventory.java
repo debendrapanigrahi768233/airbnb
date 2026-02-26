@@ -1,8 +1,7 @@
 package com.company.debpro.airbnb.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -14,6 +13,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(uniqueConstraints = @UniqueConstraint(name = "unique_hotel_room_date",columnNames = {"hotel_id","room_id","date"}))
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,15 +33,18 @@ public class Inventory {
     private LocalDate date;
 
     @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0")
-    private Integer bookedCount;
+    private Integer bookedCount=0;
 
     @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0")
-    private Integer totalCount;
+    private Integer reservedCount=0;
 
-    @Column(nullable = false,  precision = 2 ,scale = 2)      //scale: upto 99  and precision: after decimal 2 digits
+    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0")
+    private Integer totalCount=0;
+
+    @Column(nullable = false,  precision = 5 ,scale = 2)      //scale: upto 99  and precision: after decimal 2 digits
     private BigDecimal surgeFactor;
 
-    @Column(nullable = false,precision = 5, scale = 2)     //99999 , upto 2 decimal place
+    @Column(nullable = false,precision = 10, scale = 2)     //99999 , upto 2 decimal place
     private BigDecimal price;
 
     @Column(nullable = false)

@@ -20,6 +20,10 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn( name = "booking_id")  //nullable is not there, because in beginning no payment
+    private Booking booking;
+
     @Column(unique = true, nullable = false)
     private String transactionId;
 

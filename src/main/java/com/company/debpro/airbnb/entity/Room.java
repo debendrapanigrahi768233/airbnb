@@ -1,11 +1,13 @@
 package com.company.debpro.airbnb.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,13 +21,14 @@ public class Room {
 
     @ManyToOne
     @JoinColumn(name = "hotel_id", nullable = false)
+    @JsonIgnore
     private Hotel hotel;
 
     @Column(nullable = false)
     private String type;
 
     @Column(nullable = false,precision = 10,scale = 2 )        //0.00 - scale, precision is upto billion dollar
-    private String basePrice;
+    private BigDecimal basePrice;
 
     @Column(columnDefinition = "Text[]")
     private String[] photos;
