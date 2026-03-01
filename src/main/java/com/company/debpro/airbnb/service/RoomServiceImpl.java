@@ -3,13 +3,16 @@ package com.company.debpro.airbnb.service;
 import com.company.debpro.airbnb.dto.RoomDto;
 import com.company.debpro.airbnb.entity.Hotel;
 import com.company.debpro.airbnb.entity.Room;
+import com.company.debpro.airbnb.entity.User;
 import com.company.debpro.airbnb.exception.ResourceNotFoundException;
+import com.company.debpro.airbnb.exception.UnAuthorizedException;
 import com.company.debpro.airbnb.repository.HotelRepository;
 import com.company.debpro.airbnb.repository.RoomRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +34,13 @@ public class RoomServiceImpl implements RoomService{
         Hotel hotel = hotelRepository
                 .findById(hotelId)
                 .orElseThrow(()->new ResourceNotFoundException("Hotel with hotelid not found: "+hotelId));
+
+        //check if he has access
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(!user.equals(hotel.getOwner())){
+            throw new UnAuthorizedException("This user is not the owner of the hotel");
+        }
+
         Room room = modelMapper.map(roomDto, Room.class);
         room.setHotel(hotel);
         room = roomRepository.save(room);  //jpa plugin used for autocomplete or code suggestion/generation
@@ -69,6 +79,12 @@ public class RoomServiceImpl implements RoomService{
         Room room = roomRepository
                 .findById(roomId)
                 .orElseThrow(()-> new ResourceNotFoundException("Room nit exists with id: "+roomId));
+
+        //check if he has access
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(!user.equals(room.getHotel().getOwner())){
+            throw new UnAuthorizedException("This user is not the owner of the hotel");
+        }
 
         //To do :  Delete all future inventories for this room
         inventoryService.deleteAllInventoriesOfRoom(room);
